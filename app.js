@@ -10,6 +10,9 @@ app.use('/users', userRouter);
 const bookRouter = require('./routes/books');
 app.use('/books', bookRouter);
 
+const categoryRouter = require('./routes/category');
+app.use('/category', categoryRouter);
+
 const likeRouter = require('./routes//likes');
 app.use('/likes', likeRouter);
 
