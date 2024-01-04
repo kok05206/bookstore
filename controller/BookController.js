@@ -4,11 +4,6 @@ const { StatusCodes } = require('http-status-codes');
 const allBooks = (req, res) => {
   let { category_id, news, limit, currentPage } = req.query;
 
-  // limit : page당 도서 수      ex) 3
-  // currentPage : 현재 몇 페이지 ex) 1, 2, 3...
-  // offset :                 ex) 0, 3, 6, 9, ...
-  // 수식 :                    limit * (currentPage-1)
-
   let offset = limit * (currentPage - 1);
 
   let sql = `SELECT * FROM books`;
