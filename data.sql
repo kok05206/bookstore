@@ -38,3 +38,31 @@ JOIN category ON books.category_id = category.id;
 SELECT * FROM books LEFT JOIN category ON books.category_id = category.id WHERE books.id = 1;
 
 SELECT * FROM books WHERE pub_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW();
+
+
+-- 좋아요 추가
+INSERT INTO likes (user_id, liked_book_id) VALUES (1, 1);
+
+-- 좋아요 취소
+DELETE FROM likes WHERE user_id = 1 AND liked_book_id = 3;
+
+INSERT INTO likes (user_id, liked_book_id) VALUES (1, 1);
+INSERT INTO likes (user_id, liked_book_id) VALUES (1, 2);
+INSERT INTO likes (user_id, liked_book_id) VALUES (1, 3);
+INSERT INTO likes (user_id, liked_book_id) VALUES (2, 1);
+INSERT INTO likes (user_id, liked_book_id) VALUES (2, 2);
+INSERT INTO likes (user_id, liked_book_id) VALUES (2, 3);
+INSERT INTO likes (user_id, liked_book_id) VALUES (3, 1);
+INSERT INTO likes (user_id, liked_book_id) VALUES (4, 4);
+INSERT INTO likes (user_id, liked_book_id) VALUES (4, 3);
+INSERT INTO likes (user_id, liked_book_id) VALUES (4, 5);
+
+-- 조건을 만족하는 행 개수
+SELECT COUNT(*) FROM likes WHERE liked_book_id = 9;
+
+-- 좋아요 개수가 포함된 books 테이블 조회
+SELECT *, (SELECT COUNT(*) FROM likes WHERE books.id = liked_book_id) AS likes FROM books
+
+-- 개별 도서 조회 시, 사용자가 좋아요를 했는지 여부를 포함
+SELECT EXISTS (SELECT * FROM likes Where user_id = 1 AND liked_book_id = 1); -- true : 1, false : 0
+SELECT * FROM likes Where user_id = 1 AND liked_book_id = 1; -- user_id와 liked_book_id가 출력
