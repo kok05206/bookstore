@@ -26,7 +26,6 @@ const allBooks = (req, res) => {
       console.log(err);
       return res.status(StatusCodes.BAD_REQUEST).end();
     }
-
     if (results.length) {
       return res.status(StatusCodes.OK).json(results);
     } else {
