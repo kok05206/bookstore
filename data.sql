@@ -46,6 +46,7 @@ INSERT INTO likes (user_id, liked_book_id) VALUES (1, 1);
 -- 좋아요 취소
 DELETE FROM likes WHERE user_id = 1 AND liked_book_id = 3;
 
+-- 좋아요 추가 데이터
 INSERT INTO likes (user_id, liked_book_id) VALUES (1, 1);
 INSERT INTO likes (user_id, liked_book_id) VALUES (1, 2);
 INSERT INTO likes (user_id, liked_book_id) VALUES (1, 3);
