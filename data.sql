@@ -42,11 +42,6 @@ SELECT * FROM books WHERE pub_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND
 
 -- 좋아요 추가
 INSERT INTO likes (user_id, liked_book_id) VALUES (1, 1);
-
--- 좋아요 취소
-DELETE FROM likes WHERE user_id = 1 AND liked_book_id = 3;
-
--- 좋아요 추가 데이터
 INSERT INTO likes (user_id, liked_book_id) VALUES (1, 1);
 INSERT INTO likes (user_id, liked_book_id) VALUES (1, 2);
 INSERT INTO likes (user_id, liked_book_id) VALUES (1, 3);
@@ -58,6 +53,9 @@ INSERT INTO likes (user_id, liked_book_id) VALUES (4, 4);
 INSERT INTO likes (user_id, liked_book_id) VALUES (4, 3);
 INSERT INTO likes (user_id, liked_book_id) VALUES (4, 5);
 
+-- 좋아요 취소
+DELETE FROM likes WHERE user_id = 1 AND liked_book_id = 3;
+
 -- 조건을 만족하는 행 개수
 SELECT COUNT(*) FROM likes WHERE liked_book_id = 9;
 
@@ -67,3 +65,17 @@ SELECT *, (SELECT COUNT(*) FROM likes WHERE books.id = liked_book_id) AS likes F
 -- 개별 도서 조회 시, 사용자가 좋아요를 했는지 여부를 포함
 SELECT EXISTS (SELECT * FROM likes Where user_id = 1 AND liked_book_id = 1); -- true : 1, false : 0
 SELECT * FROM likes Where user_id = 1 AND liked_book_id = 1; -- user_id와 liked_book_id가 출력
+
+-- 장바구니 담기
+INSERT INTO cartItems (book_id, quantity, user_id) VALUES(1, 1, 1);
+
+-- 장바구니 조회
+SELECT cartItems.id, book_id, title, summary, quantity, price  
+FROM cartItems LEFT JOIN books 
+ON cartItems.book_id = books.id;
+
+-- 장바구니 아이템 삭제
+DELETE FROM cartItems WHERE id = ?;
+
+-- 장바구니에서 선택한(장바구니 도서 id) 아이템 목록 조회(= 선택한 장바구니 상품 목록 조회)
+SELECT * FROM `Book Store`.cartItems WHERE user_id = 1 AND id IN (1, 3);
