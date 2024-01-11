@@ -39,8 +39,8 @@ const bookDetail = (req, res) => {
   let book_id = req.params.id;
 
   let sql = `SELECT *,
-                  (SELECT COUNT(*) FROM likes WHERE books.id = liked_book_id) AS likes,
-                  (SELECT EXISTS (SELECT * FROM likes Where user_id = ? AND liked_book_id = ?)) AS liked
+              (SELECT COUNT(*) FROM likes WHERE books.id = liked_book_id) AS likes,
+              (SELECT EXISTS (SELECT * FROM likes Where user_id = ? AND liked_book_id = ?)) AS liked
               FROM books LEFT JOIN category
               ON books.category_id = category.category_id
               Where books.id = ?;`;
