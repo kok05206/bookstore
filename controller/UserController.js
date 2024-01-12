@@ -38,6 +38,7 @@ const login = (req, res) => {
     if (loginUser && loginUser.password == hashPassword) {
       const token = jwt.sign(
         {
+          id: loginUser.id,
           email: loginUser.email,
         },
         process.env.PRIVATE_KEY,
@@ -60,7 +61,7 @@ const login = (req, res) => {
   });
 };
 
-const PasswordResetRequest = (req, res) => {
+const passwordResetRequest = (req, res) => {
   const { email } = req.body;
 
   let sql = `SELECT * FROM users WHERE email = ?`;
@@ -103,4 +104,4 @@ const passwordReset = (req, res) => {
   });
 };
 
-module.exports = { join, login, PasswordResetRequest, passwordReset };
+module.exports = { join, login, passwordResetRequest, passwordReset };
