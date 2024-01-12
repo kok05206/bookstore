@@ -6,7 +6,7 @@ const { StatusCodes } = require('http-status-codes');
 const {
   join,
   login,
-  PasswordResetRequest,
+  passwordResetRequest,
   passwordReset,
 } = require('../controller/UserController');
 
@@ -16,7 +16,7 @@ router.use(express.json());
 
 router.post('/join', join);
 router.post('/login', login);
-router.post('/reset', PasswordResetRequest);
+router.post('/reset', passwordResetRequest);
 router.put('/reset', passwordReset);
 
 module.exports = router;
