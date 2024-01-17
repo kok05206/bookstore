@@ -1,6 +1,6 @@
 {
+  "type": "module",
   "dependencies": {
-    "type": "module",
     "camelcase-keys": "^9.1.3",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
