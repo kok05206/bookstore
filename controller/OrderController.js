@@ -1,113 +1,76 @@
-const mariadb = require('mysql2/promise');
-const { StatusCodes } = require('http-status-codes');
-const jwt = require('jsonwebtoken');
-const ensureAuthorization = require('../auth'); // 인증모듈
+import { StatusCodes } from 'http-status-codes';
+import authUtils from '../utils/authUtils.js';
+import OrderService from '../services/OrderService.js';
+import { validationResult } from 'express-validator';
 
 const order = async (req, res) => {
-  const conn = await mariadb.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    database: 'Book Store',
-    dateStrings: true,
-  });
+  const authorization = authUtils.ensureAuthorization(req, res);
+  const { items, delivery, totalQuantity, totalPrice, firstBookTitle } = req.body;
+  const result = validationResult(req);
 
-  let authorization = ensureAuthorization(req, res);
+  if (!result.isEmpty()) {
+    return res.status(StatusCodes.BAD_REQUEST).end();
+  }
 
-  if (authorization instanceof jwt.TokenExpiredError) {
-    return res.status(StatusCodes.UNAUTHORIZED).json({
-      message: `로그인 세션이 만료되었습니다. 다시 로그인 해주세요.`,
-    });
-  } else if (authorization instanceof jwt.JsonWebTokenError) {
-    return res.status(StatusCodes.BAD_REQUEST).json({
-      message: `잘못된 토큰입니다.`,
-    });
-  } else {
-    const { items, delivery, totalQuantity, totalPrice, firstBookTitle } = req.body;
+  try {
+    authUtils.handleAuthError(authorization, res);
 
-    let sql = `INSERT INTO delivery (address, receiver, contact) VALUES (?, ?, ?)`;
-    let values = [delivery.address, delivery.receiver, delivery.contact];
-    let [results] = await conn.execute(sql, values);
-    let delivery_id = results.insertId;
+    const deliveryResults = await OrderService.insertDeliveryInfo(delivery);
+    const deliveryId = deliveryResults.insertId;
 
-    sql = `INSERT INTO orders (book_title, total_quantity, total_price, user_id, delivery_id) VALUES (?, ?, ?, ?, ?)`;
-    values = [firstBookTitle, totalQuantity, totalPrice, authorization.id, delivery_id];
-    [results] = await conn.execute(sql, values);
-    let order_id = results.insertId;
+    const ordersResults = await OrderService.insertOrdersInfo(
+      firstBookTitle,
+      totalQuantity,
+      totalPrice,
+      authorization.id,
+      deliveryId
+    );
+    const orderId = ordersResults.insertId;
 
-    sql = `SELECT book_id, quantity FROM cartItems WHERE id IN (?)`;
-    let [orderItems, fields] = await conn.query(sql, [items]);
+    const orderDetailResults = await OrderService.getOrdersDetailInfo(items);
 
-    sql = `INSERT INTO orderedBook (order_id, book_id, quantity) VALUES ?`;
-    values = [];
-    orderItems.forEach((item) => {
-      values.push([order_id, item.book_id, item.quantity]);
+    const values = [];
+    orderDetailResults.forEach((item) => {
+      values.push([orderId, item.book_id, item.quantity]);
     });
 
-    results = await conn.query(sql, [values]);
+    const orderedBookResults = await OrderService.insertOrderedBookInfo(values);
 
-    let result = await deleteCartItems(conn, items);
-
+    const result = await OrderService.deleteCartItems(items);
     return res.status(StatusCodes.OK).json(result);
+  } catch (err) {
+    console.log(err);
+    return res.status(StatusCodes.BAD_REQUEST).end();
   }
 };
 
 const getOrders = async (req, res) => {
-  let authorization = ensureAuthorization(req, res);
+  const authorization = authUtils.ensureAuthorization(req, res);
 
-  if (authorization instanceof jwt.TokenExpiredError) {
-    return res.status(StatusCodes.UNAUTHORIZED).json({
-      message: `로그인 세션이 만료되었습니다. 다시 로그인 해주세요.`,
-    });
-  } else if (authorization instanceof jwt.JsonWebTokenError) {
-    return res.status(StatusCodes.BAD_REQUEST).json({
-      message: `잘못된 토큰입니다.`,
-    });
-  } else {
-    const conn = await mariadb.createConnection({
-      host: 'localhost',
-      user: 'root',
-      password: 'root',
-      database: 'Book Store',
-      dateStrings: true,
-    });
-    let sql = `SELECT orders.id, created_at, address, receiver, contact,
-              book_title, total_quantity, total_price
-              FROM orders LEFT JOIN delivery 
-              ON orders.delivery_id = delivery.id`;
-    let [rows, fields] = await conn.query(sql);
-    return res.status(StatusCodes.OK).json(rows);
+  try {
+    authUtils.handleAuthError(authorization, res);
+
+    const results = await OrderService.getOrdersInfo(authorization.id);
+    return res.status(StatusCodes.OK).json(results);
+  } catch (err) {
+    console.log(err);
+    return res.status(StatusCodes.BAD_REQUEST).end();
   }
 };
 
-const getOderDetail = async (req, res) => {
-  let authorization = ensureAuthorization(req, res);
+const getOrderDetail = async (req, res) => {
+  const orderId = req.params.id;
+  const authorization = authUtils.ensureAuthorization(req, res);
 
-  if (authorization instanceof jwt.TokenExpiredError) {
-    return res.status(StatusCodes.UNAUTHORIZED).json({
-      message: `로그인 세션이 만료되었습니다. 다시 로그인 해주세요.`,
-    });
-  } else if (authorization instanceof jwt.JsonWebTokenError) {
-    return res.status(StatusCodes.BAD_REQUEST).json({
-      message: `잘못된 토큰입니다.`,
-    });
-  } else {
-    const orderId = req.params.id;
+  try {
+    authUtils.handleAuthError(authorization, res);
 
-    const conn = await mariadb.createConnection({
-      host: 'localhost',
-      user: 'root',
-      password: 'root',
-      database: 'Book Store',
-      dateStrings: true,
-    });
-    let sql = `SELECT book_id, title, author, price, quantity
-              FROM orderedBook LEFT JOIN books 
-              ON orderedBook.book_id = books.id
-              WHERE order_id = ?`;
-    let [rows, fields] = await conn.query(sql, [orderId]);
-    return res.status(StatusCodes.OK).json(rows);
+    const results = await OrderService.getOrderedBookDetailInfo(orderId);
+    return res.status(StatusCodes.OK).json(results);
+  } catch (err) {
+    console.log(err);
+    return res.status(StatusCodes.BAD_REQUEST).end();
   }
 };
 
-module.exports = { order, getOrders, getOderDetail };
+export { order, getOrders, getOrderDetail };
