@@ -1,16 +1,14 @@
-const conn = require('../mariadb');
-const { StatusCodes } = require('http-status-codes');
+import { StatusCodes } from 'http-status-codes';
+import CategoryService from '../services/CategoryService.js';
 
-const allCategory = (req, res) => {
-  // 카테고리 전체 목록 리스트
-  let sql = `SELECT * FROM category`;
-  conn.query(sql, (err, results) => {
-    if (err) {
-      console.log(err);
-      return res.status(StatusCodes.BAD_REQUEST).end();
-    }
+const allCategory = async (req, res) => {
+  try {
+    const results = await CategoryService.getCategories();
     return res.status(StatusCodes.OK).json(results);
-  });
+  } catch (err) {
+    console.log(err);
+    return res.status(StatusCodes.BAD_REQUEST).end();
+  }
 };
 
-module.exports = { allCategory };
+export { allCategory };
