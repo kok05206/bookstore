@@ -1,111 +1,94 @@
-const conn = require('../mariadb');
-const { StatusCodes } = require('http-status-codes');
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
-const crypto = require('crypto');
-dotenv.config();
+import { StatusCodes } from 'http-status-codes';
+import bcryptUtils from '../utils/bcryptUtils.js';
+import UserService from '../services/UserService.js';
+import authUtils from '../utils/authUtils.js';
+import { validationResult } from 'express-validator';
 
-const join = (req, res) => {
+const join = async (req, res) => {
   const { email, password } = req.body;
-  const salt = crypto.randomBytes(10).toString('base64');
-  const hashPassword = crypto.pbkdf2Sync(password, salt, 10000, 10, 'sha512').toString('base64');
+  const result = validationResult(req);
 
-  let sql = `INSERT INTO users (email, password, salt) VALUES (?, ?,  ?)`;
-  let values = [email, hashPassword, salt];
-  conn.query(sql, values, (err, results) => {
-    if (err) {
-      console.log(err);
-      return res.status(StatusCodes.BAD_REQUEST).end();
-    }
-    if (results.affectedRows) {
-      return res.status(StatusCodes.CREATED).json(results);
-    } else {
-      return res.status(StatusCodes.BAD_REQUEST).end();
-    }
-  });
+  if (!result.isEmpty()) {
+    return res.status(StatusCodes.BAD_REQUEST).end();
+  }
+
+  try {
+    const results = await UserService.insertUserInfo(email, password);
+    return res.status(StatusCodes.CREATED).json(results);
+  } catch (err) {
+    console.log(err);
+    return res.status(StatusCodes.BAD_REQUEST).end();
+  }
 };
 
-const login = (req, res) => {
+const login = async (req, res) => {
   const { email, password } = req.body;
+  const result = validationResult(req);
 
-  let sql = `SELECT * FROM users WHERE email = ?`;
-  conn.query(sql, email, (err, results) => {
-    if (err) {
-      console.log(err);
-      return res.status(StatusCodes.BAD_REQUEST).end();
-    }
+  if (!result.isEmpty()) {
+    return res.status(StatusCodes.BAD_REQUEST).end();
+  }
 
-    const loginUser = results[0];
-    const hashPassword = crypto
-      .pbkdf2Sync(password, loginUser.salt, 10000, 10, 'sha512')
-      .toString('base64');
-    if (loginUser && loginUser.password == hashPassword) {
-      const token = jwt.sign(
-        {
-          id: loginUser.id,
-          email: loginUser.email,
-        },
-        process.env.PRIVATE_KEY,
-        {
-          expiresIn: '10m',
-          issuer: 'inhwan',
-        }
-      );
+  try {
+    const [loginUser] = await UserService.getUserEmail(email);
+    const passwordMatch = loginUser && bcryptUtils.comparePassword(password, loginUser.password);
 
-      res.cookie('token', token, {
-        httpOnly: true,
-      });
-
-      console.log(token);
-
-      return res.status(StatusCodes.OK).json(results);
-    } else {
+    if (!passwordMatch) {
       return res.status(StatusCodes.UNAUTHORIZED).end();
     }
-  });
+
+    const token = authUtils.generateToken(loginUser);
+
+    res.cookie('token', token, { httpOnly: true });
+    return res.status(StatusCodes.OK).json({ loginUser, token: token });
+  } catch (err) {
+    console.log(err);
+    return res.status(StatusCodes.BAD_REQUEST).end();
+  }
 };
 
-const passwordResetRequest = (req, res) => {
+const passwordResetRequest = async (req, res) => {
   const { email } = req.body;
+  const result = validationResult(req);
 
-  let sql = `SELECT * FROM users WHERE email = ?`;
-  conn.query(sql, email, (err, results) => {
-    if (err) {
-      console.log(err);
-      return res.status(StatusCodes.BAD_REQUEST).end();
-    }
+  if (!result.isEmpty()) {
+    return res.status(StatusCodes.BAD_REQUEST).end();
+  }
 
-    const user = results[0];
-    if (user) {
-      return res.status(StatusCodes.OK).json({
-        email: email,
-      });
-    } else {
+  try {
+    const [user] = await UserService.getUserEmail(email);
+
+    if (!user) {
       return res.status(StatusCodes.UNAUTHORIZED).end();
     }
-  });
+
+    return res.status(StatusCodes.OK).json({ email: email });
+  } catch (err) {
+    console.log(err);
+    return res.status(StatusCodes.BAD_REQUEST).end();
+  }
 };
 
-const passwordReset = (req, res) => {
+const passwordReset = async (req, res) => {
   const { email, password } = req.body;
+  const result = validationResult(req);
 
-  const salt = crypto.randomBytes(10).toString('base64');
-  const hashPassword = crypto.pbkdf2Sync(password, salt, 10000, 10, 'sha512').toString('base64');
+  if (!result.isEmpty()) {
+    return res.status(StatusCodes.BAD_REQUEST).end();
+  }
 
-  let sql = `UPDATE users SET password=?, salt=? WHERE email=?`;
-  let values = [hashPassword, salt, email];
-  conn.query(sql, values, (err, results) => {
-    if (err) {
-      console.log(err);
-      return res.status(StatusCodes.BAD_REQUEST).end();
-    }
+  try {
+    const results = await UserService.updateUserPassword(email, password);
 
     if (results.affectedRows == 0) {
       return res.status(StatusCodes.BAD_REQUEST).end();
     } else {
       return res.status(StatusCodes.OK).json(results);
     }
-  });
+  } catch (err) {
+    console.log(err);
+    return res.status(StatusCodes.BAD_REQUEST).end();
+  }
 };
 
-module.exports = { join, login, passwordResetRequest, passwordReset };
+export { join, login, passwordResetRequest, passwordReset };
