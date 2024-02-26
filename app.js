@@ -1,25 +1,18 @@
-const express = require('express');
+import express from 'express';
+import dotenv from 'dotenv';
+import routes from './routes/index.js';
+import cors from 'cors';
+
+dotenv.config();
 const app = express();
 
-const dotenv = require('dotenv');
-dotenv.config();
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  })
+);
 
-const userRouter = require('./routes/users');
-app.use('/users', userRouter);
-
-const bookRouter = require('./routes/books');
-app.use('/books', bookRouter);
-
-const categoryRouter = require('./routes/category');
-app.use('/category', categoryRouter);
-
-const likeRouter = require('./routes//likes');
-app.use('/likes', likeRouter);
-
-const cartRouter = require('./routes/carts');
-app.use('/carts', cartRouter);
-
-const orderRouter = require('./routes/orders');
-app.use('/orders', orderRouter);
+app.use(routes);
 
 app.listen(process.env.PORT);
