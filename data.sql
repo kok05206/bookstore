@@ -33,7 +33,6 @@ VALUES ("효녀심청", 12, 0, "종이책", 9,  "효심이 강한 심청이..", 
 INSERT INTO books (title, img, category_id, form, isbn, summary, detail, author, pages, contents, price, pub_date)
 VALUES ("혹부리 영감", 22, 2, "e-book", 10,  "슈퍼스타 영감..", "슈퍼스타 영감..", "장영감", 100, "이 책은 목차가 없습니다.", 12000, "2023-10-29");
 
-
 SELECT * FROM books LEFT
 JOIN category ON books.category_id = category.id;
 
