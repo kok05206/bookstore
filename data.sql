@@ -1,35 +1,37 @@
 INSERT INTO books (title, img, category_id, form, isbn, summary, detail, author, pages, contents, price, pub_date)
-VALUES ("어린왕자", 7, 0,"종이책", 0, "어리다..", "많이 어리다..", "김어림", 100, "목차입니다.", 20000, "2019-01-01");
+VALUES ("어린왕자", 7, 0,"종이책", 0, "어리다..", "많이 어리다..", "김어림", 100, "이 책은 목차가 없습니다.", 20000, "2019-01-01");
 
 INSERT INTO books (title, img, category_id, form, isbn, summary, detail, author, pages, contents, price, pub_date)
-VALUES ("신데렐라", 10, 0,"종이책", 1,  "유리구두..", "투명 유리구두..", "김구두", 100, "목차입니다.", 20000, "2023-12-31");
+VALUES ("신데렐라", 10, 0,"종이책", 1,  "유리구두..", "투명 유리구두..", "김구두", 100, "이 책은 목차가 없습니다.", 20000, "2023-12-31");
 
 INSERT INTO books (title, img, category_id, form, isbn, summary, detail, author, pages, contents, price, pub_date)
-VALUES ("백설공주", 60, 1, "종이책", 2, "사과..", "빨간 사과..", "김사과", 100, "목차입니다.", 20000, "2024-01-01");
+VALUES ("백설공주", 60, 1, "종이책", 2, "사과..", "빨간 사과..", "김사과", 100, "이 책은 목차가 없습니다.", 20000, "2024-01-01");
 
 INSERT INTO books (title, img, category_id, form, isbn, summary, detail, author, pages, contents, price, pub_date)
-VALUES ("흥부와 놀부", 90, 2, "종이책", 3,   "제비..", "까만제비..", "김제비", 100, "목차입니다.", 20000, "2023-12-25");
+VALUES ("흥부와 놀부", 90, 2, "종이책", 3,   "제비..", "까만제비..", "김제비", 100, "이 책은 목차가 없습니다.", 20000, "2023-12-25");
 
 INSERT INTO books (title, img, category_id, form, isbn, summary, detail, author, pages, contents, price, pub_date)
-VALUES ("콩쥐 팥쥐", 4,  0, "종이책", 4, "콩팥..", "콩쥐는 계모와 팥쥐에게 시달리면서 살았다..", "김콩쥐", 150, "목차입니다.", 23000, "2023-07-25");
+VALUES ("콩쥐 팥쥐", 4,  0, "종이책", 4, "콩팥..", "콩쥐는 계모와 팥쥐에게 시달리면서 살았다..", "김콩쥐", 150, "이 책은 목차가 없습니다.", 23000, "2023-07-25");
 
 INSERT INTO books (title, img, category_id, form, isbn, summary, detail, author, pages, contents, price, pub_date)
-VALUES ("별주부전", 5, 1, "종이책", 5, "토끼..", "토끼는 용궁속으로 가서..", "김별주", 135, "목차입니다.", 21000, "2023-06-17");
+VALUES ("별주부전", 5, 1, "종이책", 5, "토끼..", "토끼는 용궁속으로 가서..", "김별주", 135, "이 책은 목차가 없습니다.", 21000, "2023-06-17");
 
 INSERT INTO books (title, img, category_id, form, isbn, summary, detail, author, pages, contents, price, pub_date)
-VALUES ("해님달님", 15, 2, "ebook", 6,  "옛날에 오누이..", "옛날에 오누이..", "박해달", 100, "목차입니다.", 19000, "2023-09-07");
+VALUES ("해님달님", 15, 2, "e-book", 6,  "깜깜한 밤,", "깜깜한 밤, 오누이를 찾아온 것은 정말 엄마일까요? 호랑이에게 맞서는 오누이의 슬기에 대한 이야기를 읽어 보세요.
+오누이는 잔칫집에 일하러 간 엄마를 기다리며 집을 지키고 있었어요. 그런데 누군가 엄마인 척 문을 열어 달라는 거예요. 엄마와 달리 거친 목소리, 시뻘건 눈, 까슬까슬한 손을 가진
+수상한 손님을 피해 오누이는 도망치기 시작했어요. 과연 오누이는 무사히 살아남을 수 있을까요?", "박해달", 100, "이 책은 목차가 없습니다.", 19000, "2023-09-07");
 
 INSERT INTO books (title, img, category_id, form, isbn, summary, detail, author, pages, contents, price, pub_date)
-VALUES ("장화홍련", 80, 0, "종이책", 7, "장화와 홍련이..", "장화와 홍련이..", "정장화", 100, "목차입니다.", 13000, "2023-05-05");
+VALUES ("장화홍련", 80, 0, "종이책", 7, "장화와 홍련이..", "장화와 홍련이..", "정장화", 100, "이 책은 목차가 없습니다.", 13000, "2023-05-05");
 
 INSERT INTO books (title, img, category_id, form, isbn, summary, detail, author, pages, contents, price, pub_date)
-VALUES ("견우와 직녀", 8, 1, "ebook", 8,  "견우와 직녀가..", "견우와 직녀가..", "이견우", 100, "목차입니다.", 17500, "2023-11-24");
+VALUES ("견우와 직녀", 8, 1, "e-book", 8,  "견우와 직녀가..", "견우와 직녀가..", "이견우", 100, "이 책은 목차가 없습니다.", 17500, "2023-11-24");
 
 INSERT INTO books (title, img, category_id, form, isbn, summary, detail, author, pages, contents, price, pub_date)
-VALUES ("효녀심청", 12, 0, "종이책", 9,  "효심이 강한 심청이..", "효심이 강한 심청이..", "우효녀", 100, "목차입니다.", 14600, "2023-07-28");
+VALUES ("효녀심청", 12, 0, "종이책", 9,  "효심이 강한 심청이..", "효심이 강한 심청이..", "우효녀", 100, "이 책은 목차가 없습니다.", 14600, "2023-07-28");
 
 INSERT INTO books (title, img, category_id, form, isbn, summary, detail, author, pages, contents, price, pub_date)
-VALUES ("혹부리 영감", 22, 2, "ebook", 10,  "슈퍼스타 영감..", "슈퍼스타 영감..", "장영감", 100, "목차입니다.", 12000, "2023-10-29");
+VALUES ("혹부리 영감", 22, 2, "e-book", 10,  "슈퍼스타 영감..", "슈퍼스타 영감..", "장영감", 100, "이 책은 목차가 없습니다.", 12000, "2023-10-29");
 
 
 SELECT * FROM books LEFT
