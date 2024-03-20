@@ -2,7 +2,53 @@ import { StatusCodes } from 'http-status-codes';
 import createConnection from '../mariadb.js';
 import camelcaseKeys from 'camelcase-keys';
 
-const getBooks = async (categoryId, news, limit, currentPage, res) => {
+// const getBooks = async (categoryId, news, limit, currentPage, res) => {
+//   const conn = await createConnection();
+
+//   try {
+//     let allBooksRes = {};
+
+//     const offset = limit * (currentPage - 1);
+//     let sql = `SELECT SQL_CALC_FOUND_ROWS *, (SELECT COUNT(*) FROM likes WHERE books.id = liked_book_id) AS likes FROM books`;
+//     const values = [];
+
+//     if (categoryId && news) {
+//       sql += ` WHERE category_id=? AND pub_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW()`;
+//       values.push(categoryId);
+//     } else if (categoryId) {
+//       sql += ` WHERE category_id=?`;
+//       values.push(categoryId);
+//     } else if (news) {
+//       sql += ` WHERE pub_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW()`;
+//     }
+
+//     sql += ` LIMIT ? OFFSET ?`;
+//     values.push(parseInt(limit), offset);
+
+//     const [booksResults] = await conn.execute(sql, values);
+
+//     if (!booksResults.length) {
+//       return res.status(StatusCodes.NOT_FOUND).end();
+//     }
+
+//     allBooksRes.books = camelcaseKeys(booksResults);
+
+//     const [paginationResults] = await conn.execute(`SELECT found_rows()`);
+
+//     const pagination = {
+//       currentPage: parseInt(currentPage),
+//       totalCount: paginationResults[0]['found_rows()'],
+//     };
+
+//     allBooksRes.pagination = pagination;
+
+//     return allBooksRes;
+//   } catch (error) {
+//     console.log(error);
+//     throw error;
+//   }
+// };
+const getBooks = async (categoryId, news, limit, currentPage) => {
   const conn = await createConnection();
 
   try {
@@ -28,7 +74,8 @@ const getBooks = async (categoryId, news, limit, currentPage, res) => {
     const [booksResults] = await conn.execute(sql, values);
 
     if (!booksResults.length) {
-      return res.status(StatusCodes.NOT_FOUND).end();
+      // 데이터가 없을 경우 빈 배열을 반환
+      return { books: [], pagination: { currentPage: parseInt(currentPage), totalCount: 0 } };
     }
 
     allBooksRes.books = camelcaseKeys(booksResults);
